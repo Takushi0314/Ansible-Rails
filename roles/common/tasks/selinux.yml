@@ -1,0 +1,38 @@
+---
+- name: SELinux用のPythonモジュールをインストール(CentOS7)
+  become: true
+  yum: name=libselinux-python state=installed
+  when:
+   - ansible_distribution == "CentOS"
+   - ansible_distribution_major_version == "7"
+
+- name: SELinux用のPythonモジュールをインストール(CentOS8)
+  become: true
+  yum: name=python3-libselinux state=installed
+  when:
+   - ansible_distribution == "CentOS"
+   - ansible_distribution_major_version == "8"
+
+- name: SELinuxの無効化
+  become: true
+  selinux: state=disabled
+  register: selinux
+
+- name: SSHのポート番号の取得
+  become: true
+  set_fact:
+    ssh_port: "{{ hostvars[inventory_hostname].ansible_port if 'ansible_port' in hostvars[inventory_hostname] else 22 }}"
+    when: selinux.reboot_required
+
+- name: 再起動
+  become: true
+  shell: "sleep 2 && reboot"
+  async: 1
+  poll: 0
+  when: selinux.reboot_required
+ 
+- name: 再起動完了まで待機
+  local_action: wait_for host={{ inventory_hostname }} port={{ ssh_port }} delay=30
+  when: selinux.reboot_required
+  tags: selinux
+  become: false

@@ -1,0 +1,20 @@
+[target]
+192.168.0.8
+
+[target:vars]
+ansible_connection=ssh
+ansible_port=22
+ansible_user=app
+ansible_ssh_password=app
+ansible_password=app
+# sudo pw
+ansible_become_pass=app
+
+[webservers:children]
+target
+
+[appservers:children]
+target
+
+[dbservers:children]
+target

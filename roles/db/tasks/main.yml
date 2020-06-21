@@ -1,0 +1,26 @@
+---
+- name: yumリポジトリへの登録
+  become: true
+  yum:
+    name: "{{ postgresql_repo }}"
+    
+- name: Postgresqlインストール
+  become: true
+  yum:
+    name: "{{ item }}"
+  with_items:
+    - postgresql{{ postgresql_version_except_dot }}-devel
+    - postgresql{{ postgresql_version_except_dot }}-libs
+    - postgresql{{ postgresql_version_except_dot }}-server
+    # - python-psycopg2 # ansibleでdb設定するのであれば必要
+
+- name: 初期化処理
+  shell: "/usr/pgsql-{{ postgresql_version }}/bin/postgresql{{ postgresql_version_except_dot }}-setup initdb"
+  args:
+    creates: /var/lib/pgsql/{{ postgresql_version }}/data/postgresql.conf
+
+- name: サービス登録
+  systemd:
+     name: postgresql-{{ postgresql_version }}
+     state: restarted
+     daemon_reload: yes

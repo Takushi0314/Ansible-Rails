@@ -1,0 +1,6 @@
+---
+- name: 管理ユーザを追加
+  user:
+    name: "{{ management_user }}"
+    password: "{{ management_user_password }}"
+    groups: "{{ management_group_name }}"

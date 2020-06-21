@@ -1,0 +1,28 @@
+---
+- name: Apacheインストール
+  become: true
+  yum:
+    name: httpd
+    state: latest
+
+- name: サービス起動
+  become: true
+  systemd:
+    name: httpd
+    state: restarted
+
+- name: ポート解放(http)
+  become: true
+  firewalld:
+    zone: public
+    service: http
+    permanent: yes
+    state: enabled
+
+- name: firewalld再起動(設定適当)
+  become: true
+  systemd:
+    name: firewalld
+    state: restarted
+    daemon_reload: yes
+    enabled: yes

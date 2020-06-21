@@ -1,0 +1,27 @@
+[web_app]
+999.999.999.999
+ansible_connection=ssh
+ansible_port=22
+ansible_user=app
+ansible_password=app
+# sudo pw
+ansible_become_pass=app
+
+[db]
+999.999.999.999
+ansible_connection=ssh
+ansible_port=22
+ansible_user=app
+ansible_password=app
+# sudo pw
+ansible_become_pass=app
+
+
+[webservers]
+web_app
+
+[appservers]
+web_app
+
+[dbservers]
+db
